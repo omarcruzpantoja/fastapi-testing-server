@@ -1,0 +1,28 @@
+version: '3'
+services:
+  fastapi-testing-web:
+    container_name: fastapi-testing-web
+    platform: linux/amd64
+    image: fastapi-testing-web
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    command: poetry run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    tty: true
+    stdin_open: true
+    ports:
+      - ${APP_PORT}:8000
+    volumes:
+      - ./:/app/
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT}
+
+    networks:
+      - fastapi-testing-network
+
+volumes:
+  pgdata:
+
+
+networks:
+  fastapi-testing-network:

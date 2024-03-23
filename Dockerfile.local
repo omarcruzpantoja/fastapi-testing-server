@@ -1,0 +1,27 @@
+FROM python:3.12.2-slim-bookworm
+
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONFAULTHANDLER=1 \
+    PYTHONUNBUFFERED=1 \
+    # Poetry's configuration:
+    POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_CREATE=false \
+    POETRY_HOME='/opt/poetry' \ 
+    POETRY_CACHE_DIR='/opt/.cache' \
+    POETRY_VENV='/opt/poetry-venv' \
+    POETRY_VERSION=1.7.1
+
+# System deps:
+RUN python3 -m venv $POETRY_VENV && \
+    $POETRY_VENV/bin/pip install poetry==$POETRY_VERSION
+
+ENV PATH="${PATH}:${POETRY_VENV}/bin"
+# Copy only requirements to cache them in docker layer
+
+WORKDIR /app
+
+COPY poetry.lock pyproject.toml ./
+COPY . .
+
+RUN poetry install
